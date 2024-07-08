@@ -54,6 +54,7 @@ import {ChatType} from '../chat/chat';
 import pause from '../../helpers/schedulers/pause';
 import {Accessor, createRoot, createSignal, Setter} from 'solid-js';
 import SelectedEffect from '../chat/selectedEffect';
+import Icon from '../icon';
 
 type SendFileParams = SendFileDetails & {
   file?: File,
@@ -563,10 +564,7 @@ export default class PopupNewMedia extends PopupElement {
 
   public addFiles(files: File[]) {
     const toPush = files.filter((file) => {
-      const found = this.files.find((_file) => {
-        return _file.lastModified === file.lastModified && _file.name === file.name && _file.size === file.size;
-      });
-
+      const found = this.files.find((_file) => this.isTheSameFile(_file, file));
       return !found;
     });
 
@@ -574,6 +572,19 @@ export default class PopupNewMedia extends PopupElement {
       this.files.push(...toPush);
       this.attachFiles();
     }
+  }
+
+  private removeFile(file: File) {
+    this.files = this.files.filter((_file) => !this.isTheSameFile(_file, file))
+    if(this.files.length > 0) {
+      this.attachFiles();
+    } else {
+      this.hide();
+    }
+  }
+
+  private isTheSameFile(left: File, right: File) {
+    return left.lastModified === right.lastModified && left.name === right.name && left.size === right.size;
   }
 
   private onKeyDown = (e: KeyboardEvent) => {
@@ -827,6 +838,34 @@ export default class PopupNewMedia extends PopupElement {
         ]).then(() => {});
       }
     }
+
+    itemDiv.append(this.getFloatingMediaActions(params, isVideo));
+  }
+
+  private getFloatingMediaActions(params: SendFileParams, isVideo: boolean) {
+    const actionsFloatingContainer = document.createElement('div');
+    actionsFloatingContainer.classList.add('media-actions-floating-container');
+
+    const actions = document.createElement('div');
+    actions.classList.add('media-actions');
+
+    if(!isVideo) {
+      // actions.append(Icon('mediaspoiler', 'media-actions-icon'))
+    }
+
+    const applySpoilerAction = Icon('mediaspoiler', 'media-actions-icon');
+    applySpoilerAction.onclick = () => {
+      params.mediaSpoiler == null ? this.applyMediaSpoiler(params) : this.removeMediaSpoiler(params);
+    }
+    actions.append(applySpoilerAction);
+
+    const deleteFileAction = Icon('delete', 'media-actions-icon');
+    deleteFileAction.onclick = () => this.removeFile(params.file);
+    actions.append(deleteFileAction);
+
+    actionsFloatingContainer.append(actions);
+
+    return actionsFloatingContainer;
   }
 
   private async attachDocument(params: SendFileParams): ReturnType<PopupNewMedia['attachMedia']> {

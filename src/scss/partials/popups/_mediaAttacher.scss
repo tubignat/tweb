@@ -18,7 +18,7 @@
       //max-height: unquote('min(640px, 100%)');
       max-height: 100%;
 
-      img, 
+      img,
       video {
         border-radius: inherit;
       }
@@ -32,7 +32,7 @@
       margin-bottom: 9px;
       padding: 12px 20px 15px;
       position: relative;
-  
+
       .btn-primary {
         width: auto;
         height: 2.25rem;
@@ -187,7 +187,7 @@
       position: absolute;
     }
 
-    img, 
+    img,
     video {
       object-fit: cover;
       width: 100%;
@@ -231,6 +231,54 @@
 
     @include hover-background-effect() {
       --message-background-color: var(--light-filled-secondary-text-color);
+    }
+  }
+
+  .popup-item-media {
+    &:hover .media-actions-icon {
+      opacity: 0.7;
+    }
+
+    &:hover .media-actions-icon:hover {
+      opacity: 1;
+    }
+
+    &:hover > .media-actions-floating-container > .media-actions {
+      backdrop-filter: blur(12px) opacity(1);
+      background: rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .media-actions-floating-container {
+    opacity: 1;
+    display: flex;
+    position: absolute;
+    bottom: 16px;
+    width: 100%;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .media-actions {
+    display: flex;
+    padding: 0 2px 0 2px;
+    border-radius: 16px;
+    transition: backdrop-filter 0.5s, background 0.5s;
+    backdrop-filter: blur(12px) opacity(0);
+  }
+
+  .media-actions-icon {
+    color: var(--white);
+    opacity: 0;
+    cursor: pointer;
+    pointer-events: all;
+    padding: 6px 8px;
+    font-size: 20px;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
     }
   }
 
